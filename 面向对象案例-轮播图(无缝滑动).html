@@ -1,0 +1,429 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>面向对象案例-轮播图(无缝滑动)</title>
+	<style>
+		ul,ol,p{margin:0px;padding:0px;list-style:none;}
+		h1{text-align:center;}
+		img{vertical-align:middle;}
+		/* 轮播图舞台 */
+		.slider{
+			width:900px;
+			height:500px;
+			border:2px solid black;
+			margin:50px auto;
+			position:relative;
+			overflow:hidden;
+		}
+		/* 大图 */
+		.slider ul{
+			width:1000%;
+			height:100%;
+			position:absolute;    /* 为轮播图滑动做准备 */
+			top:0px;
+			left:0%;
+		}
+		.slider ul li{
+			width:10%;
+			height:100%;
+			float:left;
+			display:inline;
+			position:relative;
+			overflow:hidden;   /*配合下列的从两侧向中间缩小*/
+		}
+		.slider ul li img{
+			/*使图片呈现感应式，在容器宽度减小时图片从两侧向中间缩小*/
+			/* 为了实现该效果，图片的宽高不能设置为百分比，需要设置为固定的 */
+			width:900px;
+			height:500px;
+			position:absolute;
+			left:50%;
+			margin-left:-450px;
+		}
+		/* 大图页脚的文字 */
+		.slider p{
+			position:absolute;
+			bottom:0px;
+			background-color:rgba(0,0,0,0.5);
+			color:#fff;
+			width:100%;
+			line-height:50px;
+			text-indent:2em;
+			font-size:20px;
+		}
+		/* 下标 */
+		.slider ol{
+			position:absolute;
+			bottom:8px;
+			left:50%;
+			-webkit-transform:translateX(-50%);
+			-moz-transform:translateX(-50%);
+			-ms-transform:translateX(-50%);
+			-o-transform:translateX(-50%);
+			transform:translateX(-50%);
+			
+		}
+		.slider ol li{
+			background-color:#fff;
+			float:left;
+			width:20px;
+			height:20px;
+			margin:0 5px;
+			-webkit-border-radius:50%;
+			-moz-border-radius:50%;
+			-ms-border-radius:50%;
+			-o-border-radius:50%;
+			border-radius:50%;
+		}
+		.slider ol li.current{
+			background-color:red;
+			-webkit-transform:scale(1.2);
+			-moz-transform:scale(1.2);
+			-ms-transform:scale(1.2);
+			-o-transform:scale(1.2);
+			transform:scale(1.2);
+		}
+		/* 按钮 */
+		.slider span{
+			width:60px;
+			height:60px;
+			background-color:rgba(255,255,255,0);
+			position:absolute;
+			left:10px;
+			top:50%;
+			-webkit-transform:translateY(-50%);
+			-moz-transform:translateY(-50%);
+			-ms-transform:translateY(-50%);
+			-o-transform:translateY(-50%);
+			transform:translateY(-50%);
+
+			-webkit-border-radius:50%;
+			-moz-border-radius:50%;
+			-ms-border-radius:50%;
+			-o-border-radius:50%;
+			border-radius:50%;
+		}
+		/* 分别在按钮元素内部的前后各插入一条横线 */
+		.slider span:before,.slider span:after{
+			content:"";
+			width:25px;
+			height:4px;
+			background-color:#fff;
+			position:absolute;
+			top:50%;
+			-webkit-transform:translateY(-50%);
+			-moz-transform:translateY(-50%);
+			-ms-transform:translateY(-50%);
+			-o-transform:translateY(-50%);
+			transform:translateY(-50%);
+
+			-webkit-transition:all 0.5s;
+			-moz-transition:all 0.5s;
+			-ms-transition:all 0.5s;
+			-o-transition:all 0.5s;
+			transition:all 0.5s;
+		}
+		/* 左按钮 */
+		.slider span:first-of-type:before,.slider span:first-of-type:after{
+			left:20px;
+			-webkit-transform-origin:1px center;
+			-moz-transform-origin:1px center;
+			-ms-transform-origin:1px center;
+			-o-transform-origin:1px center;
+			transform-origin:1px center;
+		}
+		/* 右按钮 */
+		.slider span:last-of-type{
+			left:auto;
+			right:10px;
+		}
+		.slider span:last-of-type:before,.slider span:last-of-type:after{
+			left:auto;
+			right:20px;
+			-webkit-transform-origin:24px center;
+			-moz-transform-origin:24px center;
+			-ms-transform-origin:24px center;
+			-o-transform-origin:24px center;
+			transform-origin:24px center;
+		}
+		/* 统一设置按钮前后插入的横线的旋转角度 */
+		.slider span:first-of-type:before,.slider span:last-of-type:before{
+			-webkit-transform:rotate(60deg);
+			-moz-transform:rotate(60deg);
+			-ms-transform:rotate(60deg);
+			-o-transform:rotate(60deg);
+			transform:rotate(60deg);
+		}
+		.slider span:first-of-type:after,.slider span:last-of-type:after{
+			-webkit-transform:rotate(-60deg);
+			-moz-transform:rotate(-60deg);
+			-ms-transform:rotate(-60deg);
+			-o-transform:rotate(-60deg);
+			transform:rotate(-60deg);
+		}
+		/* 左右按钮悬停时的样式 */
+		.slider span:hover{
+			background-color:rgba(255,255,255,1);
+		}
+		.slider span:hover:before,.slider span:hover:after{
+			background-color:red;
+		}
+		.slider span:hover:first-of-type:before,.slider span:hover:last-of-type:before{
+			-webkit-transform:rotate(45deg);
+			-moz-transform:rotate(45deg);
+			-ms-transform:rotate(45deg);
+			-o-transform:rotate(45deg);
+			transform:rotate(45deg);
+		}
+		.slider span:hover:first-of-type:after,.slider span:hover:last-of-type:after{
+			-webkit-transform:rotate(-45deg);
+			-moz-transform:rotate(-45deg);
+			-ms-transform:rotate(-45deg);
+			-o-transform:rotate(-45deg);
+			transform:rotate(-45deg);
+		}
+	</style>
+</head>
+<body>
+	<h1>轮播图</h1><hr>
+	<!-- 轮播图舞台 -->
+	<div class="slider">
+		<!-- 大图 -->
+		<ul>
+			<li><a href=""><img src="images/html.jpg" 	alt="1.html是基础"></a></li>
+			<li><a href=""><img src="images/css.jpg" 	alt="2.css是长的像什么"></a></li>
+			<li><a href=""><img src="images/js.jpg"		alt="3.js是动作"></a></li>
+			<li><a href=""><img src="images/jquery.jpg" alt="4.你最好不用jquery"></a></li>
+			<li><a href=""><img src="images/zepto.jpg"  alt="5.移动端的jquery"></a></li>
+
+			<!-- 替身 -->
+			<li><a href=""><img src="images/html.jpg" 	alt="1.html是基础"></a></li>
+		</ul>
+		<!-- 大图页脚的文字 -->
+		<p>1.html是基础</p>
+		<!-- 下标 -->
+		<ol>
+			<li class="current"></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ol>
+		<!-- 左按钮 -->
+		<span></span>
+		<!-- 右按钮 -->
+		<span></span>
+	</div>
+
+	<script>
+
+		//设定步长函数
+		//oBox指定位移的盒子，dest指定横向需要停留的目标位置(数字：不带px)
+		function step(oBox,dest){
+			var step_timer;   //盒子每步位移的定时器
+			var step_interval = 10;    // 设置步与步之间的间隔,毫秒数
+			var init_position = oBox.offsetLeft;   //位移盒子的当前位置
+			var total_distance = dest - init_position;  //需要移动的距离
+
+			//每次位移总用时1000毫秒，获取一次位移由多少步组成，
+			var step_num = 1000/step_interval;
+			
+			//当前步数
+			var current_num = 0;
+			
+			//设置每步的距离
+			var step_distance = total_distance / step_num;
+
+			//每次调用定时器前需要先清除之前的定时器
+			clearInterval( step_timer );
+			// 设置盒子每步位移的定时器
+			step_timer = setInterval(function(){
+				current_num++;     //每次走一步
+				// 设置盒子每步的位移
+				oBox.style.left = init_position + current_num * step_distance + 'px';
+
+				//当全部步数走完了
+				if( current_num >= step_num ){
+					//停止定时器
+					clearInterval( step_timer );
+					//将盒子停止在目标位置
+					oBox.style.left = dest + 'px';
+				}
+			},step_interval);
+		}
+
+
+		// 由于会创建多个轮播图对象实例，因此采用构造器+原型的方式
+		// 构造器用于存储属性
+		function Slider(obj){
+			this.currentIndex = 0;   //设置当前显示图片的索引值
+			this.speed = 2000;       //设置定时器间隔时间
+			// 获取指定大容器obj中的dom元素
+			this.ul 	  	  = obj.querySelector('ul');//获取大图ul容器
+			this.ul_lis 	  = this.ul.querySelectorAll('ul li');//获取ul下的li大图集合
+			this.len 		  = this.ul_lis.length;       //获取li大图集合中的元素长度
+			this.replacement  = 1;    //替身数量
+			this.txt 		  = obj.querySelector('p');//获取文字dom元素
+			this.ol_lis		  = obj.querySelectorAll('ol li');//获取ol下的li下标集合
+			this.btn_left     = obj.querySelector('span:first-of-type');//获取左按钮
+			this.btn_right 	  = obj.querySelector('span:last-of-type');//获取右按钮
+
+			this.timer; //定时器容器
+			this.lock = false;   //定义开关，进行滑动动画时显示为true，否则为false
+			this.lock_time = 1200;  //定义锁住的时间
+			var that = this;   //缓存this，防止this丢失
+
+			// 初始化自动播放
+			this.autoPlay();
+
+			
+			// 为右按钮绑定点击事件
+			this.btn_right.addEventListener( 'click',function(){
+				if( that.lock === false ){
+					that.next();//直接调用下一页方法
+				}
+			} )
+
+			// 为右按钮绑定点击事件
+			this.btn_left.addEventListener( 'click',function(){
+				if( that.lock === false ){
+					that.pre();//直接调用上一页方法
+				}
+			} )
+			
+			// 当鼠标在大容器obj内悬停时，调用播放暂停方法
+			obj.addEventListener('mouseenter',function(){
+				that.pause();
+			});
+
+			// 当鼠标离开大容器obj时，调用自动播放方法
+			obj.addEventListener('mouseleave',function(){
+				that.autoPlay();
+			});
+
+			// 当鼠标悬停在下标处时,自动切换到相应的大图
+			// 遍历下标
+			for(var i = 0; i < this.len-this.replacement; i++  ){
+				// 将遍历的索引值通过立即执行的函数传入到函数内部
+				var ol_lis_mouseover = function(ol_lis_index){
+					return function(){
+						//当前显示大图为第一张，鼠标悬停在最后一张图上时
+						if( 0 === that.currentIndex && 4 === ol_lis_index ){
+							that.currentIndex = 4;
+
+							that.ul.style.left = -(that.len-1)+'00%';
+							that.goto( that.currentIndex );
+						}else if( 4 === that.currentIndex && 0 === ol_lis_index ){//当前显示大图为最后一张图，鼠标悬停在第一张上时
+							that.goto( that.len-1 );//继续向右移动，移动到第一张图的替身上
+							
+							setTimeout(function(){
+								that.ul.style.left = 0;//在移动到第一张图的替身上完毕后，瞬间替换到第一张图上
+							},that.lock_time);
+
+							//由于在goto方法中最后会将传入的值重新赋值给this.currentIndex，因此重置为0需要放在调用goto方法之后
+							that.currentIndex = 0;
+						}else{
+							that.goto( ol_lis_index );
+						}
+					}
+				}(i);
+				// 为下标绑定鼠标悬停事件
+				this.ol_lis[i].addEventListener( 'mouseover', ol_lis_mouseover );
+			}
+		}
+		// 原型用于存储方法
+		// 核心方法--根据传入的index,跳转到指定页
+		Slider.prototype.goto = function(index){
+			if( this.lock === false ){
+				this.lock = true;    //开始滑动，开关显示为true
+				// 大图集合ul根据指定的索引值设定绝对定位的left值，即横向需要停留的目标位置(数字：不带px)
+				var ul_dest = -index * this.ul.offsetWidth/10;
+
+				//调用定时器函数
+				step(this.ul,ul_dest);
+
+				// 下标变化---排他思想
+				// 隐藏所有的大图,取出所有下标的样式
+				for( var i = 0; i < this.len-this.replacement; i++ ){
+					this.ol_lis[i].classList.remove('current');
+				}
+				// 为与大图对应的下标添加样式
+				this.ol_lis[index%(this.len-this.replacement)].classList.add('current');
+
+				// 获取与大图相应的img中的自定义属性中的alt属性中的文字内容
+				// console.log(this.ul_lis[index].querySelector('img').alt);
+				this.txt.innerHTML = this.ul_lis[index].querySelector('img').alt;
+
+				// 根据每次传入的实参的值，更新this.currentIndex的值，保证当前大图的索引值与其相互对应
+				this.currentIndex = index;
+
+				//1000毫秒后滑动完成，开关显示为false
+				var that = this;
+				//指定时间后将开关设置为false
+				setTimeout(function(){
+					that.lock = false;
+				},this.lock_time);
+			}
+		}
+
+		// 添加下一页方法
+		Slider.prototype.next = function(){
+			// 索引值可以为0,1,2,3,4，当到达5时需要重置为0
+			// 每调用一次方法，传入的实参加一
+			this.currentIndex++;
+			// 当到达5时需要重置为0
+			if( this.currentIndex >= 5 ){
+				this.goto( this.len-1 );    //先继续向右移动，移动到第一张图的替身上
+				var that = this;
+				setTimeout(function(){
+					that.ul.style.left = 0;	//再在移动到第一张图的替身上完毕后，瞬间替换到第一张图上
+				},this.lock_time);
+
+				//由于在goto方法中最后会将传入的值重新赋值给this.currentIndex，因此重置为0需要放在调用goto方法之后
+				this.currentIndex = 0;
+			}else{
+				this.goto( this.currentIndex );
+				// console.log(this.currentIndex );
+			}
+		}
+
+		// 添加上一页方法
+		Slider.prototype.pre = function(){
+			// 索引值可以为0,1,2,3,4，当小于0时需要重置为4
+			// 每调用一次方法，传入的实参减一
+			this.currentIndex--;
+			// 当到达5时需要重置为0
+			if( this.currentIndex <= -1 ){
+				//由于此处的goto方法中传入的是this.currentIndex，因此需要放置在调用goto方法之前
+				this.currentIndex = 4;
+
+				this.ul.style.left = -(this.len-1)+'00%';//先瞬间替换到第一张图的替身上
+				this.goto( this.currentIndex );	//再从第一张图的替身上开始向左滑动
+			}else{
+				this.goto( this.currentIndex );
+			}
+		}
+
+		// 添加自动播放方法
+		Slider.prototype.autoPlay = function(){
+			var that = this;
+			this.timer = setInterval(function(){
+				that.next();
+			},this.speed);
+		}
+
+		//添加自动播放暂停方法
+		Slider.prototype.pause = function(){
+			clearInterval(this.timer);
+		}
+
+
+		// 获取slider类,即用来包含整个轮播图dom的那个容器
+		var obj = document.querySelector('.slider');
+		// 创建对象
+		// 将上面获取到的用来包含整个轮播图dom的那个容器传入到构造器中
+		var s1 = new Slider(obj);
+	</script>
+</body>
+</html>
